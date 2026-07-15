@@ -11,7 +11,7 @@
 | **따닥 방지** | 멘티가 신청서 저장 버튼을 연속 클릭 | `memberNo` | `DUPLICATE_REQUEST` |
 | **선착순 동시성 제어** | 여러 멘토가 같은 신청서를 동시에 픽 | `consultationId` | `RESOURCE_LOCKED` |
 
-- Redis가 죽으면 락을 건너뛰고 비즈니스 로직을 그냥 실행합니다 **(fail-open)**
+- Redis가 죽으면 락을 건너뛰고 비즈니스 로직을 그냥 실행합니다 **[fail-open](https://github.com/leeworms/redis-distributed-lock#fail-open-%ED%8C%90%EB%8B%A8)**
 
 ---
 
@@ -100,7 +100,8 @@ SET RESEARCH:RESOURCE_LOCK:MATCHING_PICK:1000              LOCKED  NX  EX 10
 
 Redis 장애 시 요청을 막지 않고 비즈니스 로직을 그냥 실행합니다.
 
-DB 레벨의 유니크 제약이나 상태 검증이 최종 방어선을 잡아주고 있었고, Redis 장애 상황에서 신청 자체가 안 되는 경험이 더 나쁘다고 판단했습니다.
+신청서 개수나 상태가 일부 어긋나는 문제는 운영에서 확인 후 보정할 수 있었고,  
+Redis 장애 때문에 신청 자체가 막히는 쪽이 더 큰 문제라고 판단했습니다.
 
 ```java
 private boolean tryLock(String key, Duration ttl) {
