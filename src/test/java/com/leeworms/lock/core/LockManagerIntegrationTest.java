@@ -13,7 +13,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,7 +62,7 @@ class LockManagerIntegrationTest {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         try {
-            executor.submit(() -> lockManager.executeWithLock(LockPurpose.CONSULTATION_FORM_SAVE, 100L, Duration.ofSeconds(5), () -> {
+            executor.submit(() -> lockManager.executeWithLock(LockPurpose.CONSULTATION_FORM_SAVE, 100L, () -> {
                 lockHeld.countDown();   // 락 획득 완료 신호
                 await(releaseLock);     // 메인 스레드 검증 완료 후 해제 대기
                 return "saved";
@@ -90,7 +89,7 @@ class LockManagerIntegrationTest {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         try {
-            executor.submit(() -> lockManager.executeWithResourceLock(LockPurpose.MATCHING_PICK, 200L, Duration.ofSeconds(5), () -> {
+            executor.submit(() -> lockManager.executeWithResourceLock(LockPurpose.MATCHING_PICK, 200L, () -> {
                 lockHeld.countDown();
                 await(releaseLock);
                 return "picked";
